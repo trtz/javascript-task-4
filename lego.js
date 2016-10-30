@@ -109,7 +109,7 @@ exports.sortBy = function (property, order) {
             .sort(function (elFirst, elSecond) {
                 return (elFirst[property] > elSecond[property] ? 1 : -1) *
                     order;
-        });
+            });
     };
 };
 
