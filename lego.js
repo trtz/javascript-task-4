@@ -4,7 +4,7 @@
  * Сделано задание на звездочку
  * Реализованы методы or и and
  */
-exports.isStar = true;
+exports.isStar = false;
 
 var PRIORITIES = {
     'filterIn': 1,
@@ -21,11 +21,12 @@ function clone(origin) {
 function copyCollection(collection) {
     return collection.map(function (element) {
         return clone(element);
-    })
+    });
 }
 
 function getValues(obj) {
     var keys = Object.keys(obj);
+
     return keys.map(function (key) {
         return obj[key];
     });
@@ -61,6 +62,7 @@ exports.query = function (collection) {
 /**
  * Выбор полей
  * @params {...String}
+ * @returns {Function}
  */
 exports.select = function () {
     var properties = getValues(arguments);
@@ -69,8 +71,9 @@ exports.select = function () {
         return collection.map(function (el) {
             var selected = {};
             for (var i = 0; i < properties.length; i++) {
-                if (el.hasOwnProperty(properties[i]))
+                if (el.hasOwnProperty(properties[i])) {
                     selected[properties[i]] = el[properties[i]];
+                }
             }
 
             return selected;
@@ -82,6 +85,7 @@ exports.select = function () {
  * Фильтрация поля по массиву значений
  * @param {String} property – Свойство для фильтрации
  * @param {Array} values – Доступные значения
+ * @returns {Function}
  */
 exports.filterIn = function (property, values) {
     return function filterIn(collection) {
@@ -95,14 +99,16 @@ exports.filterIn = function (property, values) {
  * Сортировка коллекции по полю
  * @param {String} property – Свойство для фильтрации
  * @param {String} order – Порядок сортировки (asc - по возрастанию; desc – по убыванию)
+ * @returns {Function}
  */
 exports.sortBy = function (property, order) {
     order = (order === 'asc') ? 1 : -1;
+
     return function sortBy(collection) {
         return getValues(collection)
             .sort(function (elFirst, elSecond) {
-            return (elFirst[property] > elSecond[property] ? 1 : -1)
-                * order;
+                return (elFirst[property] > elSecond[property] ? 1 : -1) *
+                    order;
         });
     };
 };
@@ -111,6 +117,7 @@ exports.sortBy = function (property, order) {
  * Форматирование поля
  * @param {String} property – Свойство для фильтрации
  * @param {Function} formatter – Функция для форматирования
+ * @returns {Function}
  */
 exports.format = function (property, formatter) {
     return function (collection) {
@@ -125,6 +132,7 @@ exports.format = function (property, formatter) {
 /**
  * Ограничение количества элементов в коллекции
  * @param {Number} count – Максимальное количество элементов
+ * @returns {Function}
  */
 exports.limit = function (count) {
     return function limit(collection) {
