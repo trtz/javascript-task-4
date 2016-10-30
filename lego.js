@@ -149,6 +149,7 @@ if (exports.isStar) {
      * Фильтрация, объединяющая фильтрующие функции
      * @star
      * @params {...Function} – Фильтрующие функции
+     * @returns {Function}
      */
     exports.or = function () {
         var functions = getValues(arguments);
@@ -166,6 +167,7 @@ if (exports.isStar) {
      * Фильтрация, пересекающая фильтрующие функции
      * @star
      * @params {...Function} – Фильтрующие функции
+     * @returns {Function}
      */
     exports.and = function () {
         var functions = getValues(arguments);
