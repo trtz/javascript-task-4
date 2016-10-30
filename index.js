@@ -61,14 +61,6 @@ var friends = [
     }
 ];
 
-// var bestFriends = lego.query(
-//     friends,
-//     lego.select('name', 'gender', 'email'),
-//     lego.filterIn('favoriteFruit', ['Яблоко'])
-// );
-// console.log(bestFriends);
-//
-// return;
 
 // Находим настоящих друзей
 var bestFriends = lego.query(
@@ -106,8 +98,6 @@ console.info(bestFriends);
 ]
 */
 
-
-return;
 
 if (lego.isStar) {
     // Билли был бы по-настоящему счастлив, если бы ему удалось провести сразу две вечеринки:
