@@ -4,11 +4,11 @@
  * Сделано задание на звездочку
  * Реализованы методы or и and
  */
-exports.isStar = false;
+exports.isStar = true;
 
 var PRIORITIES = {
     'filterIn': 1,
-    'sortBy': 1,
+    'sortBy': 2,
     'select': 5,
     'limit': 10,
     'format': 10
