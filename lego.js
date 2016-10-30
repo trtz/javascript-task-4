@@ -113,12 +113,11 @@ exports.sortBy = function (property, order) {
  * @param {Function} formatter – Функция для форматирования
  */
 exports.format = function (property, formatter) {
-    return function format(collection) {
+    return function (collection) {
         return collection.map(function (el) {
-            var copied = clone(el);
-            copied[property] = formatter(copied[property]);
+            el[property] = formatter(el[property]);
 
-            return copied;
+            return el;
         });
     };
 };
