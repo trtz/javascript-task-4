@@ -124,9 +124,10 @@ exports.sortBy = function (property, order) {
 exports.format = function (property, formatter) {
     return function (collection) {
         return collection.map(function (el) {
-            el[property] = formatter(el[property]);
+            var copied = clone(el);
+            copied[property] = formatter(el[property]);
 
-            return el;
+            return copied;
         });
     };
 };
