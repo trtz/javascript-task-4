@@ -4,11 +4,13 @@
  * Сделано задание на звездочку
  * Реализованы методы or и and
  */
-exports.isStar = true;
+exports.isStar = false;
 
 var PRIORITIES = {
+    'or': 1,
+    'and': 1,
     'filterIn': 1,
-    'sortBy': 2,
+    'sortBy': 3,
     'select': 5,
     'limit': 10,
     'format': 10
@@ -140,6 +142,7 @@ exports.limit = function (count) {
     };
 };
 
+
 if (exports.isStar) {
 
     /**
@@ -148,7 +151,15 @@ if (exports.isStar) {
      * @params {...Function} – Фильтрующие функции
      */
     exports.or = function () {
-        return;
+        var functions = getValues(arguments);
+
+        return function or(collection) {
+            return collection.filter(function (el) {
+                return functions.some(function (func) {
+                    return func(collection).indexOf(el) !== -1;
+                });
+            });
+        };
     };
 
     /**
@@ -157,6 +168,14 @@ if (exports.isStar) {
      * @params {...Function} – Фильтрующие функции
      */
     exports.and = function () {
-        return;
+        var functions = getValues(arguments);
+
+        return function and(collection) {
+            return collection.filter(function (el) {
+                return functions.every(function (func) {
+                    return func(collection).indexOf(el) !== -1;
+                });
+            });
+        };
     };
 }
