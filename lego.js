@@ -7,8 +7,6 @@
 exports.isStar = false;
 
 var PRIORITIES = {
-    'or': 1,
-    'and': 1,
     'filterIn': 1,
     'sortBy': 3,
     'select': 5,
@@ -30,7 +28,7 @@ function getValues(obj) {
     var keys = Object.keys(obj);
 
     return keys.map(function (key) {
-        return obj[key];
+        return clone(obj[key]);
     });
 }
 
