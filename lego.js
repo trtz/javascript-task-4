@@ -4,9 +4,11 @@
  * Сделано задание на звездочку
  * Реализованы методы or и and
  */
-exports.isStar = false;
+exports.isStar = true;
 
 var PRIORITIES = {
+    'or': 1,
+    'and': 1,
     'filterIn': 1,
     'sortBy': 3,
     'select': 5,
@@ -120,7 +122,7 @@ exports.sortBy = function (property, order) {
  * @returns {Function}
  */
 exports.format = function (property, formatter) {
-    return function (collection) {
+    return function format(collection) {
         return collection.map(function (el) {
             var copied = clone(el);
             copied[property] = formatter(el[property]);
