@@ -30,7 +30,7 @@ function getValues(obj) {
     var keys = Object.keys(obj);
 
     return keys.map(function (key) {
-        return clone(obj[key]);
+        return obj[key];
     });
 }
 
