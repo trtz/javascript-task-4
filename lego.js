@@ -6,7 +6,7 @@
  */
 exports.isStar = true;
 
-var PRIORITIES = {
+var PERFORMING_PRIORITIES = {
     'or': 1,
     'and': 1,
     'filterIn': 1,
@@ -26,13 +26,6 @@ function copyCollection(collection) {
     });
 }
 
-function getValues(obj) {
-    var keys = Object.keys(obj);
-
-    return keys.map(function (key) {
-        return obj[key];
-    });
-}
 
 /**
  * Запрос к коллекции
@@ -41,14 +34,14 @@ function getValues(obj) {
  * @returns {Array}
  */
 exports.query = function (collection) {
-    var functions = getValues(arguments);
+    var functions = [].slice.call(arguments);
     functions.splice(0, 1);
     var copied = copyCollection(collection);
-    functions.sort(function (fFirst, fSecond) {
-        if (PRIORITIES[fFirst.name] > PRIORITIES[fSecond.name]) {
+    functions.sort(function (func1, func2) {
+        if (PERFORMING_PRIORITIES[func1.name] > PERFORMING_PRIORITIES[func2.name]) {
             return 1;
         }
-        if (PRIORITIES[fFirst.name] === PRIORITIES[fSecond.name]) {
+        if (PERFORMING_PRIORITIES[func1.name] === PERFORMING_PRIORITIES[func2.name]) {
             return 0;
         }
 
@@ -67,14 +60,14 @@ exports.query = function (collection) {
  * @returns {Function}
  */
 exports.select = function () {
-    var properties = getValues(arguments);
+    var fields = [].slice.call(arguments);
 
     return function select(collection) {
-        return collection.map(function (el) {
+        return collection.map(function (elem) {
             var selected = {};
-            for (var i = 0; i < properties.length; i++) {
-                if (el.hasOwnProperty(properties[i])) {
-                    selected[properties[i]] = el[properties[i]];
+            for (var i = 0; i < fields.length; i++) {
+                if (elem.hasOwnProperty(fields[i])) {
+                    selected[fields[i]] = elem[fields[i]];
                 }
             }
 
@@ -91,11 +84,12 @@ exports.select = function () {
  */
 exports.filterIn = function (property, values) {
     return function filterIn(collection) {
-        return collection.filter(function (el) {
-            return values.indexOf(el[property]) !== -1;
+        return collection.filter(function (elem) {
+            return values.indexOf(elem[property]) !== -1;
         });
     };
 };
+
 
 /**
  * Сортировка коллекции по полю
@@ -104,13 +98,11 @@ exports.filterIn = function (property, values) {
  * @returns {Function}
  */
 exports.sortBy = function (property, order) {
-    order = (order === 'asc') ? 1 : -1;
-
     return function sortBy(collection) {
-        return getValues(collection)
-            .sort(function (elFirst, elSecond) {
-                return (elFirst[property] > elSecond[property] ? 1 : -1) *
-                    order;
+        return copyCollection(collection)
+            .sort(function (elem1, elem2) {
+                return (elem1[property] > elem2[property] ? 1 : -1) *
+                (order === 'asc' ? 1 : -1);
             });
     };
 };
@@ -123,9 +115,9 @@ exports.sortBy = function (property, order) {
  */
 exports.format = function (property, formatter) {
     return function format(collection) {
-        return collection.map(function (el) {
-            var copied = clone(el);
-            copied[property] = formatter(el[property]);
+        return collection.map(function (elem) {
+            var copied = clone(elem);
+            copied[property] = formatter(elem[property]);
 
             return copied;
         });
@@ -138,6 +130,10 @@ exports.format = function (property, formatter) {
  * @returns {Function}
  */
 exports.limit = function (count) {
+    if (count < 0) {
+        throw RangeError('Count must be >= 0!')
+    }
+
     return function limit(collection) {
         return collection.slice(0, count);
     };
@@ -153,12 +149,12 @@ if (exports.isStar) {
      * @returns {Function}
      */
     exports.or = function () {
-        var functions = getValues(arguments);
+        var functions = [].slice.call(arguments);
 
         return function or(collection) {
-            return collection.filter(function (el) {
+            return collection.filter(function (elem) {
                 return functions.some(function (func) {
-                    return func(collection).indexOf(el) !== -1;
+                    return func(collection).indexOf(elem) !== -1;
                 });
             });
         };
@@ -171,12 +167,12 @@ if (exports.isStar) {
      * @returns {Function}
      */
     exports.and = function () {
-        var functions = getValues(arguments);
+        var functions = [].slice.call(arguments);
 
         return function and(collection) {
-            return collection.filter(function (el) {
+            return collection.filter(function (elem) {
                 return functions.every(function (func) {
-                    return func(collection).indexOf(el) !== -1;
+                    return func(collection).indexOf(elem) !== -1;
                 });
             });
         };
