@@ -34,18 +34,16 @@ function copyCollection(collection) {
  * @returns {Array}
  */
 exports.query = function (collection) {
-    var functions = [].slice.call(arguments);
-    functions.splice(0, 1);
+    var functions = [].slice.call(arguments, 1);
     var copied = copyCollection(collection);
     functions.sort(function (func1, func2) {
         if (PERFORMING_PRIORITIES[func1.name] > PERFORMING_PRIORITIES[func2.name]) {
             return 1;
         }
-        if (PERFORMING_PRIORITIES[func1.name] === PERFORMING_PRIORITIES[func2.name]) {
-            return 0;
-        }
 
-        return -1;
+        return (PERFORMING_PRIORITIES[func1.name] === PERFORMING_PRIORITIES[func2.name])
+            ? 0
+            : -1;
     });
     functions.forEach(function (func) {
         copied = func(copied);
@@ -98,11 +96,13 @@ exports.filterIn = function (property, values) {
  * @returns {Function}
  */
 exports.sortBy = function (property, order) {
+    var orderFactor = order === 'asc' ? 1 : -1;
+
     return function sortBy(collection) {
         return copyCollection(collection)
             .sort(function (elem1, elem2) {
                 return (elem1[property] > elem2[property] ? 1 : -1) *
-                (order === 'asc' ? 1 : -1);
+                orderFactor;
             });
     };
 };
@@ -130,9 +130,7 @@ exports.format = function (property, formatter) {
  * @returns {Function}
  */
 exports.limit = function (count) {
-    if (count < 0) {
-        throw new RangeError('Count must be >= 0!');
-    }
+    count = (count < 0) ? 0 : count;
 
     return function limit(collection) {
         return collection.slice(0, count);
