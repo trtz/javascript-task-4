@@ -131,7 +131,7 @@ exports.format = function (property, formatter) {
  */
 exports.limit = function (count) {
     if (count < 0) {
-        throw RangeError('Count must be >= 0!')
+        throw new RangeError('Count must be >= 0!');
     }
 
     return function limit(collection) {
